@@ -1,0 +1,342 @@
+<Window x:Class="RoboSync.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RoboSync.App"
+        mc:Ignorable="d"
+        Title="RoboSync — Friendly file copy &amp; sync"
+        Icon="Assets/RoboSync.ico"
+        Height="820" Width="1180" MinHeight="700" MinWidth="1040"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource WindowBackgroundBrush}"
+        FontFamily="Segoe UI">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ===================== Header ===================== -->
+        <Grid Grid.Row="0" Margin="2,0,0,16">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Border Width="40" Height="40" CornerRadius="10" Background="{StaticResource AccentBrush}"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="RS" FontSize="16" FontWeight="Bold" Foreground="White"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{x:Static local:AppInfo.Name}" FontSize="20" FontWeight="Bold" />
+                        <TextBlock Text="{x:Static local:AppInfo.VendorLine}" FontSize="12"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   VerticalAlignment="Bottom" Margin="8,0,0,3" />
+                    </StackPanel>
+                    <TextBlock Text="{x:Static local:AppInfo.VersionDisplay}" FontSize="11.5"
+                               Foreground="{StaticResource TextSecondaryBrush}" />
+                </StackPanel>
+            </StackPanel>
+            <Button Content="About" Style="{StaticResource SecondaryButton}" Padding="14,7"
+                    HorizontalAlignment="Right" VerticalAlignment="Center" Click="OnAboutClick" />
+        </Grid>
+
+        <!-- ===================== Saved jobs toolbar ===================== -->
+        <Border Grid.Row="1" Style="{StaticResource Card}" Padding="14,10" Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Saved jobs" VerticalAlignment="Center"
+                           Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,0" />
+                <ComboBox Grid.Column="1" ItemsSource="{Binding SavedJobs}"
+                          SelectedItem="{Binding SelectedSavedJob}" DisplayMemberPath="Name"
+                          MaxWidth="420" HorizontalAlignment="Left" />
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Content="Load" Style="{StaticResource SecondaryButton}"
+                            Command="{Binding LoadJobCommand}" Margin="0,0,8,0" />
+                    <Button Content="Save" Style="{StaticResource SecondaryButton}"
+                            Command="{Binding SaveJobCommand}" Margin="0,0,8,0" />
+                    <Button Content="Delete" Style="{StaticResource SecondaryButton}"
+                            Command="{Binding DeleteJobCommand}" Margin="0,0,8,0" />
+                    <Button Content="New" Style="{StaticResource SecondaryButton}"
+                            Command="{Binding NewJobCommand}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ===================== Main content ===================== -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.05*" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="1.25*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Left column: configuration -->
+            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Padding="0,0,6,0">
+                <StackPanel>
+                    <!-- Folders -->
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="Job" Style="{StaticResource SectionHeader}" />
+                            <TextBlock Text="Job name" Style="{StaticResource FieldLabel}" />
+                            <TextBox Text="{Binding JobName, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding IsConfigurable}" Margin="0,0,0,12" />
+
+                            <TextBlock Text="Source folder" Style="{StaticResource FieldLabel}" />
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Text="{Binding SourcePath, UpdateSourceTrigger=PropertyChanged}"
+                                         IsEnabled="{Binding IsConfigurable}" />
+                                <Button Grid.Column="1" Content="Browse…" Style="{StaticResource SecondaryButton}"
+                                        Command="{Binding BrowseSourceCommand}" Margin="8,0,0,0" />
+                            </Grid>
+
+                            <TextBlock Text="Destination folder" Style="{StaticResource FieldLabel}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Text="{Binding DestinationPath, UpdateSourceTrigger=PropertyChanged}"
+                                         IsEnabled="{Binding IsConfigurable}" />
+                                <Button Grid.Column="1" Content="Browse…" Style="{StaticResource SecondaryButton}"
+                                        Command="{Binding BrowseDestinationCommand}" Margin="8,0,0,0" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Mode -->
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="Operation mode" Style="{StaticResource SectionHeader}" />
+                            <ComboBox ItemsSource="{Binding Modes}" SelectedItem="{Binding SelectedMode}"
+                                      IsEnabled="{Binding IsConfigurable}" />
+                            <TextBlock Text="{Binding ModeDescription}" Style="{StaticResource Hint}"
+                                       Margin="0,10,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Options -->
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="Advanced options" Style="{StaticResource SectionHeader}" />
+
+                            <CheckBox Content="Include subfolders" IsChecked="{Binding IncludeSubfolders}"
+                                      IsEnabled="{Binding IsConfigurable}" />
+                            <CheckBox Content="Multithreaded copy" IsChecked="{Binding MultiThreaded}"
+                                      IsEnabled="{Binding IsConfigurable}" />
+                            <CheckBox Content="Preserve timestamps" IsChecked="{Binding PreserveTimestamps}"
+                                      IsEnabled="{Binding IsConfigurable}" />
+                            <CheckBox Content="Preserve permissions when possible" IsChecked="{Binding PreservePermissions}"
+                                      IsEnabled="{Binding IsConfigurable}" />
+                            <CheckBox Content="Skip newer files in destination" IsChecked="{Binding SkipNewerInDestination}"
+                                      IsEnabled="{Binding IsConfigurable}" />
+                            <CheckBox Content="Dry run (preview only — copies nothing)" IsChecked="{Binding DryRun}"
+                                      IsEnabled="{Binding IsConfigurable}" />
+
+                            <Grid Margin="0,14,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                    <TextBlock Text="Retry count" Style="{StaticResource FieldLabel}" />
+                                    <TextBox Text="{Binding RetryCount, UpdateSourceTrigger=PropertyChanged}"
+                                             IsEnabled="{Binding IsConfigurable}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="4,0,4,0">
+                                    <TextBlock Text="Retry wait (s)" Style="{StaticResource FieldLabel}" />
+                                    <TextBox Text="{Binding RetryWaitSeconds, UpdateSourceTrigger=PropertyChanged}"
+                                             IsEnabled="{Binding IsConfigurable}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Margin="8,0,0,0">
+                                    <TextBlock Text="Threads" Style="{StaticResource FieldLabel}" />
+                                    <TextBox Text="{Binding ThreadCount, UpdateSourceTrigger=PropertyChanged}"
+                                             IsEnabled="{Binding MultiThreaded}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock Text="Exclude file patterns" Style="{StaticResource FieldLabel}" Margin="0,16,0,4" />
+                            <TextBox Text="{Binding ExcludeFilePatterns, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding IsConfigurable}" AcceptsReturn="True" TextWrapping="Wrap"
+                                     Height="58" VerticalScrollBarVisibility="Auto" />
+                            <TextBlock Text="One pattern per line, e.g. *.tmp or Thumbs.db" Style="{StaticResource Hint}"
+                                       Margin="0,4,0,0" />
+
+                            <TextBlock Text="Exclude folder patterns" Style="{StaticResource FieldLabel}" Margin="0,12,0,4" />
+                            <TextBox Text="{Binding ExcludeFolderPatterns, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding IsConfigurable}" AcceptsReturn="True" TextWrapping="Wrap"
+                                     Height="58" VerticalScrollBarVisibility="Auto" />
+                            <TextBlock Text="One pattern per line, e.g. node_modules or .git" Style="{StaticResource Hint}"
+                                       Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Right column: preview, progress, log -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Command preview -->
+                <Border Grid.Row="0" Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,12">
+                            <TextBlock Text="Command preview" Style="{StaticResource SectionHeader}" Margin="0" />
+                            <Button Content="Copy" Style="{StaticResource SecondaryButton}" Padding="12,5"
+                                    HorizontalAlignment="Right" Command="{Binding CopyPreviewCommand}" />
+                        </Grid>
+                        <Border Background="{StaticResource SurfaceAltBrush}" CornerRadius="6"
+                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12">
+                            <TextBox Text="{Binding CommandPreview, Mode=OneWay}" IsReadOnly="True"
+                                     Background="Transparent" BorderThickness="0" FontFamily="Consolas"
+                                     FontSize="12.5" Foreground="#9CDCFE" TextWrapping="Wrap" />
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Progress & controls -->
+                <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Progress" Style="{StaticResource SectionHeader}" />
+
+                        <TextBlock Text="Current file" Style="{StaticResource FieldLabel}" />
+                        <TextBlock Text="{Binding CurrentFile}" TextTrimming="CharacterEllipsis"
+                                   FontFamily="Consolas" FontSize="12" Margin="0,0,0,10" />
+
+                        <ProgressBar Value="{Binding ProgressValue, Mode=OneWay}" Minimum="0" Maximum="100"
+                                     IsIndeterminate="{Binding ProgressIsIndeterminate, Mode=OneWay}" Margin="0,0,0,14" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Files" Style="{StaticResource FieldLabel}" />
+                                <TextBlock Text="{Binding FilesProcessedText}" FontSize="15" FontWeight="SemiBold" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Copied" Style="{StaticResource FieldLabel}" />
+                                <TextBlock Text="{Binding BytesCopiedText}" FontSize="15" FontWeight="SemiBold" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Elapsed" Style="{StaticResource FieldLabel}" />
+                                <TextBlock Text="{Binding ElapsedText}" FontSize="15" FontWeight="SemiBold" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="3">
+                                <TextBlock Text="Remaining" Style="{StaticResource FieldLabel}" />
+                                <TextBlock Text="{Binding EtaText}" FontSize="15" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
+                            <Button Content="Start" Style="{StaticResource PrimaryButton}" MinWidth="110"
+                                    Command="{Binding StartCommand}" Margin="0,0,10,0" />
+                            <Button Content="{Binding PauseResumeLabel}" Style="{StaticResource SecondaryButton}"
+                                    MinWidth="100" Command="{Binding PauseResumeCommand}" Margin="0,0,10,0" />
+                            <Button Content="Cancel" Style="{StaticResource DangerButton}" MinWidth="100"
+                                    Command="{Binding CancelCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Activity log -->
+                <Border Grid.Row="2" Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Margin="0,0,0,8">
+                            <TextBlock Text="Activity log" Style="{StaticResource SectionHeader}" Margin="0" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="Open log folder" Style="{StaticResource SecondaryButton}"
+                                        Padding="10,5" Command="{Binding OpenLogFolderCommand}" Margin="0,0,8,0" />
+                                <Button Content="Clear" Style="{StaticResource SecondaryButton}" Padding="10,5"
+                                        Command="{Binding ClearLogCommand}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Grid.Row="1" Text="{Binding LogFilePath}" Style="{StaticResource Hint}"
+                                   TextTrimming="CharacterEllipsis" Margin="0,0,0,8" />
+
+                        <Border Grid.Row="2" Background="{StaticResource SurfaceAltBrush}" CornerRadius="6"
+                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                            <ListBox x:Name="LogList" ItemsSource="{Binding LogEntries}" Background="Transparent"
+                                     BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     HorizontalContentAlignment="Stretch">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="Padding" Value="2,1" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <ContentPresenter />
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="8,1">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0"
+                                                       Text="{Binding Timestamp, StringFormat='HH:mm:ss'}"
+                                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                                       FontFamily="Consolas" FontSize="11.5" Margin="0,0,10,0" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Message}"
+                                                       Foreground="{Binding Level, Converter={StaticResource LogLevelToBrush}}"
+                                                       FontFamily="Consolas" FontSize="11.5" TextWrapping="Wrap" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- ===================== Status bar ===================== -->
+        <Border Grid.Row="3" Margin="0,16,0,0" Padding="14,10" CornerRadius="8"
+                Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1">
+            <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding StatusIsError}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Border>
+    </Grid>
+</Window>

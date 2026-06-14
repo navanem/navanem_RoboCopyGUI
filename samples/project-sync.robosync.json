@@ -1,0 +1,27 @@
+{
+  "Name": "Project Sync",
+  "SourcePath": "C:\\Work\\projects",
+  "DestinationPath": "D:\\Sync\\projects",
+  "Mode": "Sync",
+  "Options": {
+    "IncludeSubfolders": true,
+    "RetryCount": 3,
+    "RetryWaitSeconds": 5,
+    "MultiThreaded": true,
+    "ThreadCount": 8,
+    "PreserveTimestamps": true,
+    "PreservePermissions": false,
+    "ExcludeFilePatterns": [
+      "*.tmp",
+      "*.obj"
+    ],
+    "ExcludeFolderPatterns": [
+      "node_modules",
+      "bin",
+      "obj",
+      ".git"
+    ],
+    "SkipNewerInDestination": true,
+    "DryRun": false
+  }
+}

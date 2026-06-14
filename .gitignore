@@ -1,0 +1,35 @@
+# Build output
+bin/
+obj/
+out/
+publish/
+artifacts/
+
+# .NET
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+project.lock.json
+project.fragment.lock.json
+
+# Visual Studio / Rider / VS Code
+.vs/
+.vscode/
+.idea/
+*.DotSettings.user
+
+# Test results
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Local app data produced at runtime (jobs/logs live under %APPDATA%\RoboSync)
+*.log

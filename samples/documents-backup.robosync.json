@@ -1,0 +1,25 @@
+{
+  "Name": "Documents Backup",
+  "SourcePath": "C:\\Users\\Public\\Documents",
+  "DestinationPath": "D:\\Backups\\Documents",
+  "Mode": "Copy",
+  "Options": {
+    "IncludeSubfolders": true,
+    "RetryCount": 3,
+    "RetryWaitSeconds": 5,
+    "MultiThreaded": true,
+    "ThreadCount": 8,
+    "PreserveTimestamps": true,
+    "PreservePermissions": false,
+    "ExcludeFilePatterns": [
+      "*.tmp",
+      "Thumbs.db",
+      "~$*"
+    ],
+    "ExcludeFolderPatterns": [
+      "$RECYCLE.BIN"
+    ],
+    "SkipNewerInDestination": true,
+    "DryRun": false
+  }
+}

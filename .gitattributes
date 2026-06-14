@@ -1,0 +1,11 @@
+# Normalize line endings. Text files are stored with LF in the repository.
+* text=auto eol=lf
+
+# Windows-specific scripts use CRLF in the working tree.
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Treat these as binary (no diff/merge).
+*.png binary
+*.ico binary

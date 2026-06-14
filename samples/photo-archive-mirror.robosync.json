@@ -1,0 +1,23 @@
+{
+  "Name": "Photo Archive Mirror",
+  "SourcePath": "E:\\Photos",
+  "DestinationPath": "\\\\NAS\\media\\photo-archive",
+  "Mode": "Mirror",
+  "Options": {
+    "IncludeSubfolders": true,
+    "RetryCount": 2,
+    "RetryWaitSeconds": 10,
+    "MultiThreaded": true,
+    "ThreadCount": 16,
+    "PreserveTimestamps": true,
+    "PreservePermissions": false,
+    "ExcludeFilePatterns": [
+      "*.tmp"
+    ],
+    "ExcludeFolderPatterns": [
+      ".cache"
+    ],
+    "SkipNewerInDestination": false,
+    "DryRun": false
+  }
+}
